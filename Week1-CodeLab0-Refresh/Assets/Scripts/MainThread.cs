@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StartGame : MonoBehaviour
+public class MainThread : MonoBehaviour
 {
     public GameObject Drop;
     public int totalDropsAmount = 10;
     public static int dropsCount;
+    public static bool GameStarted; // To prevent from vanishing when generating drops
     private SpriteRenderer sr;
 
     // Start is called before the first frame update

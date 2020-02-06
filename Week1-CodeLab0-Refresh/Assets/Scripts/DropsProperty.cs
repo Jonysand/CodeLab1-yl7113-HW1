@@ -29,6 +29,10 @@ public class DropsProperty : MonoBehaviour
         upForce = Input.GetKey(KeyCode.W);
         downForce = Input.GetKey(KeyCode.S);
 
+        if (rightForce || leftForce || upForce || downForce && !MainThread.GameStarted) {
+            MainThread.GameStarted = true;
+        }
+
         if (rightForce) rb2D.AddForce(new Vector3(r, 0.0f, 0.0f));
         if (leftForce) rb2D.AddForce(new Vector3(-r, 0.0f, 0.0f));
         if (upForce) rb2D.AddForce(new Vector3(0.0f, r, 0.0f));
@@ -36,13 +40,18 @@ public class DropsProperty : MonoBehaviour
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
+        if (!MainThread.GameStarted) return;
         if (other.gameObject.GetComponent<DropsProperty>()){
+            // collide with other drops
             if(this.r >= other.gameObject.GetComponent<DropsProperty>().r){
                 this.r = this.r+other.gameObject.GetComponent<DropsProperty>().r/2;
                 this.gameObject.transform.localScale = new Vector2(this.r, this.r);
             }else{
                 Destroy(this.gameObject);
             }
+        }else{
+            // collide with walls
+            Destroy(this.gameObject);
         }
     }
 }
