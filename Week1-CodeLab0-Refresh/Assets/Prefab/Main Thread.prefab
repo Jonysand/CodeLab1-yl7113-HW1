@@ -45,4 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Drop: {fileID: 8982037216937424451, guid: 45312192cdba0494c80a6d7c0d4d064f, type: 3}
   totalDropsAmount: 10
-  dropsCount: 0
+  scoreText: {fileID: 0}
