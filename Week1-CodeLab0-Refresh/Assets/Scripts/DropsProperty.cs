@@ -16,10 +16,14 @@ public class DropsProperty : MonoBehaviour
     float deltaY;
     private Vector2 collidePosition;
     // Input
+#if UNITY_EDITOR
     private bool rightForce;
     private bool leftForce;
     private bool upForce;
     private bool downForce;
+#else
+    private Quaternion inputForce;
+#endif
 
     void Start()
     {
@@ -30,20 +34,28 @@ public class DropsProperty : MonoBehaviour
     void Update()
     {
         // detect input
-        rightForce = Input.GetKey(KeyCode.D);
-        leftForce = Input.GetKey(KeyCode.A);
-        upForce = Input.GetKey(KeyCode.W);
-        downForce = Input.GetKey(KeyCode.S);
-
-        if (rightForce || leftForce || upForce || downForce && !MainThread.GameStarted) {
-            MainThread.GameStarted = true;
-            //rb2D.isKinematic = true;
-        }
-
-        if (rightForce) rb2D.AddForce(new Vector3(r/2, 0.0f, 0.0f));
-        if (leftForce) rb2D.AddForce(new Vector3(-r/2, 0.0f, 0.0f));
-        if (upForce) rb2D.AddForce(new Vector3(0.0f, r/2, 0.0f));
-        if (downForce) rb2D.AddForce(new Vector3(0.0f, -r/2, 0.0f));
+        #if UNITY_EDITOR
+            rightForce = Input.GetKey(KeyCode.D);
+            leftForce = Input.GetKey(KeyCode.A);
+            upForce = Input.GetKey(KeyCode.W);
+            downForce = Input.GetKey(KeyCode.S);
+            if (rightForce || leftForce || upForce || downForce && !MainThread.GameStarted) {
+                MainThread.GameStarted = true;
+            }
+            if (rightForce) rb2D.AddForce(new Vector3(r/2, 0.0f, 0.0f));
+            if (leftForce) rb2D.AddForce(new Vector3(-r/2, 0.0f, 0.0f));
+            if (upForce) rb2D.AddForce(new Vector3(0.0f, r/2, 0.0f));
+            if (downForce) rb2D.AddForce(new Vector3(0.0f, -r/2, 0.0f));
+        #else
+            inputForce = Input.gyro.attitude;
+            if (inputForce && !MainThread.GameStarted) {
+                MainThread.GameStarted = true;
+            }
+            if (inputForce) {
+                rb2D.AddForce(new Vector3(inputForce.x*r/2, 0.0f, 0.0f));
+                rb2D.AddForce(new Vector3(0.0f, inputForce.y*r/2, 0.0f));
+            }
+        #endif
 
         if (willShrink){
             this.r -= Mathf.Sqrt(Mathf.Pow(deltaX, 2)+Mathf.Pow(deltaY, 2))/this.r;
